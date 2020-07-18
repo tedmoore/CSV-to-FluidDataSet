@@ -4,6 +4,8 @@ When you specify which columns to pull out, the end-index column will end up in 
 
 The json file will be put in the same folder as the csv file.
 
+The IDs in the FluidDataSet will just be a string of the index of the vector from the CSV file.
+
 Arguments:
 
 --input		file path of the csv file
