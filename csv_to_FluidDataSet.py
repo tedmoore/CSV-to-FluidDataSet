@@ -4,18 +4,7 @@ import argparse
 import numpy as np
 import os
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input",action='store',dest='input',type=str,required=True)
-    parser.add_argument("--start-index",action='store',dest='start_index',type=int)
-    parser.add_argument("--end-index",action='store',dest='end_index',type=int)
-    parser.add_argument("--file-suffix",action='store',dest='file_suffix',type=str)
-    args = parser.parse_args()
-
-    file_suffix = ''
-
-    if args.file_suffix != None:
-        file_suffix = args.file_suffix
+def csv_to_FluidDataSet(input_path,start_index,end_index):
 
     csv_data = []
 
@@ -26,13 +15,14 @@ if __name__ == '__main__':
 
     csv_data = np.array(csv_data)
 
-    start_index = 0
-    end_index = len(csv_data[0]) - 1
-
-    if args.start_index != None:
+    if args.start_index == None:
+        start_index = 0
+    else:
         start_index = args.start_index
 
-    if args.end_index != None:
+    if args.end_index == None:
+        end_index = len(csv_data[0]) - 1
+    else:
         end_index = args.end_index
     
     json_dict = {}
@@ -50,7 +40,22 @@ if __name__ == '__main__':
 
     json_dict["data"] = json_data
 
-    # new_path = args.input + ".json"
+    return json_dict
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input",action='store',dest='input',type=str,required=True)
+    parser.add_argument("--start-index",action='store',dest='start_index',type=int)
+    parser.add_argument("--end-index",action='store',dest='end_index',type=int)
+    parser.add_argument("--file-suffix",action='store',dest='file_suffix',type=str)
+    args = parser.parse_args()
+
+    file_suffix = ''
+    if args.file_suffix != None:
+        file_suffix = args.file_suffix
+    
+    json_dict = csv_to_FluidDataSet(args.input,args.start_index,args.end_index)
+
     new_path = os.path.splitext(args.input)[0] + '_' + file_suffix + '.json'
 
     with open(new_path,"w") as json_file:
