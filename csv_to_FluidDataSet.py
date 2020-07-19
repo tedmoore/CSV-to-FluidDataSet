@@ -1,3 +1,12 @@
+"""
+Ted Moore
+ted@tedmooremusic.com
+www.tedmooremusic.com
+July 18, 2020
+
+Take in a CSV file of data and create a json file that is appropriately formatted for loading into a FluidDataSet (www.flucoma.org)
+"""
+
 import csv
 import json
 import argparse
