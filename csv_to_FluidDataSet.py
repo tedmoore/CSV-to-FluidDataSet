@@ -13,7 +13,7 @@ import argparse
 import numpy as np
 import os
 
-def csv_to_FluidDataSet(csv_data,indices):
+def csv_to_FluidDataSet(csv_data,indices,label_column,header_row):
 
     json_dict = {}
 
@@ -21,16 +21,24 @@ def csv_to_FluidDataSet(csv_data,indices):
 
     selected_data = []
     
-    for row in csv_data:
-        frame = []
-        for index in indices:
-            frame.append(row[index])
-        selected_data.append(frame)
+    for i, row in enumerate(csv_data):
+        if header_row and i == 0:
+            # skip this row
+        else:
+            frame = []
+            for index in indices:
+                if label_column:
+                    index += 1
+                frame.append(row[index])
+            selected_data.append(frame)
 
     json_data = {}
 
     for i, vector in enumerate(selected_data):
-        json_data[str(i)] = vector
+        label = str(i)
+        if label_column:
+            label = csv_data[i][0]
+        json_data[label] = vector
 
     json_dict["data"] = json_data
 
@@ -43,6 +51,8 @@ if __name__ == '__main__':
     parser.add_argument("--end-index",action='store',dest='end_index',type=int)
     parser.add_argument("--file-suffix",action='store',dest='file_suffix',type=str)
     parser.add_argument("--specify-indices",action='store',dest='specified_indices',nargs='+',type=int)
+    parser.add_argument("--label-column",action='store',dest='label_column',type=bool,default=False)
+    parser.add_argument("--header-row",action='store',dest='header_row',type=bool,default=False)
     args = parser.parse_args()
 
     
@@ -51,7 +61,7 @@ if __name__ == '__main__':
     with open(args.input) as csv_file:
         reader = csv.reader(csv_file)
         for row in reader:
-            csv_data.append(np.array([float(val) for val in row]))
+            csv_data.append(np.array(row))
 
     csv_data = np.array(csv_data)
 
@@ -73,7 +83,7 @@ if __name__ == '__main__':
     else:
         indices = args.specified_indices
 
-    json_dict = csv_to_FluidDataSet(csv_data,indices)
+    json_dict = csv_to_FluidDataSet(csv_data,indices,args.label_column,args.header_row)
     
     file_suffix = ''
     
