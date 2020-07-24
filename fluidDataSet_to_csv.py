@@ -21,11 +21,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input",action='store',dest='input',type=str,required=True)
     parser.add_argument("--file-suffix",action='store',dest='file_suffix',type=str)
+    # parser.add_argument("--label-column",action='store_true',dest='label_column')
     args = parser.parse_args()
 
     csv_data = fluidDataSet_to_csv(args.input)
 
-    new_path = os.path.splitext(args.input)[0] + '_' + args.file_suffix + '.csv'
+    new_path = os.path.splitext(args.input)[0]
+    
+    if args.file_suffix != None:
+        new_path += '_' + args.file_suffix
+
+    new_path += '.csv'
 
     with open(new_path, 'w', newline='') as f:
         writer = csv.writer(f)
