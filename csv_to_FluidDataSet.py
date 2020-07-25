@@ -86,15 +86,21 @@ if __name__ == '__main__':
     parser.add_argument("--specify-indices",action='store',dest='specified_indices',nargs='+',type=int)
     parser.add_argument("--label-column",action='store_true',dest='label_column',default=False)
     parser.add_argument("--header-row",action='store_true',dest='header_row',default=False)
+    parser.add_argument("--print-header-indices",action='store_true',dest='print_header_indices',default=False)
     args = parser.parse_args()
 
-    for csv_in_path in args.input:
-        csv_data = extract_all_data(csv_in_path)
-        indices = calc_indices(args.specified_indices,args.start_index,args.end_index,csv_data)
-        json_dict = csv_to_FluidDataSet(csv_data,indices,args.label_column,args.header_row)
-        new_path = os.path.splitext(csv_in_path)[0]
-        if args.file_suffix != None:
-            new_path += '_' + args.file_suffix
-        new_path += '.json'
-        with open(new_path,"w") as json_file:
-            json.dump(json_dict, json_file)
+    if not args.print_header_indices:
+        for csv_in_path in args.input:
+            csv_data = extract_all_data(csv_in_path)
+            indices = calc_indices(args.specified_indices,args.start_index,args.end_index,csv_data)
+            json_dict = csv_to_FluidDataSet(csv_data,indices,args.label_column,args.header_row)
+            new_path = os.path.splitext(csv_in_path)[0]
+            if args.file_suffix != None:
+                new_path += '_' + args.file_suffix
+            new_path += '.json'
+            with open(new_path,"w") as json_file:
+                json.dump(json_dict, json_file)
+    else:
+        csv_data = extract_all_data(args.input[0])
+        for i, name in enumerate(csv_data[0]):
+            print(i,name)
