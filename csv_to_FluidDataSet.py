@@ -13,7 +13,7 @@ import argparse
 import numpy as np
 import os
 
-def csv_to_FluidDataSet(csv_data,indices,label_column,header_row):
+def csv_data_to_FluidDataSet_dict(csv_data,indices,label_column,header_row):
 
     json_dict = {}
 
@@ -42,7 +42,7 @@ def csv_to_FluidDataSet(csv_data,indices,label_column,header_row):
 
     return json_dict
 
-def extract_all_data(filepath):
+def csv_path_to_data(filepath):
     csv_data = []
 
     with open(filepath) as csv_file:
@@ -50,7 +50,7 @@ def extract_all_data(filepath):
         for row in reader:
             csv_data.append(np.array(row))
 
-    csv_data = np.array(csv_data)
+    # csv_data = np.array(csv_data)
 
     return csv_data
 
@@ -91,16 +91,18 @@ if __name__ == '__main__':
 
     if not args.print_header_indices:
         for csv_in_path in args.input:
-            csv_data = extract_all_data(csv_in_path)
+            csv_data = csv_path_to_data(csv_in_path)
             indices = calc_indices(args.specified_indices,args.start_index,args.end_index,csv_data)
-            json_dict = csv_to_FluidDataSet(csv_data,indices,args.label_column,args.header_row)
+            json_dict = csv_data_to_FluidDataSet_dict(csv_data,indices,args.label_column,args.header_row)
+            
             new_path = os.path.splitext(csv_in_path)[0]
             if args.file_suffix != None:
                 new_path += '_' + args.file_suffix
             new_path += '.json'
+            
             with open(new_path,"w") as json_file:
                 json.dump(json_dict, json_file)
     else:
-        csv_data = extract_all_data(args.input[0])
+        csv_data = csv_path_to_data(args.input[0])
         for i, name in enumerate(csv_data[0]):
             print(i,name)
